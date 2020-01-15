@@ -1,13 +1,14 @@
-package com.n.yswdbdemo;
+package com.custom.ui;
 
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
 
-import com.n.yswdbdemo.bean.User;
-import com.n.yswdbdemo.db.BaseDao;
-import com.n.yswdbdemo.db.BaseDaoFactory;
+import com.custom.R;
+import com.custom.bean.User;
+import com.custom.db.BaseDao;
+import com.custom.db.BaseDaoFactory;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -27,9 +28,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void createTable(View view) {
-        BaseDao<User> baseDao = BaseDaoFactory.getInstance().getBaseDao(User.class);
-        baseDao.insert(new User(1,"Ysw","123456"));
-        Toast.makeText(this, "插入成功", Toast.LENGTH_LONG).show();
+        BaseDaoFactory.getInstance().getBaseDao(User.class);
+        Toast.makeText(this, "数据库创建成功", Toast.LENGTH_LONG).show();
     }
 
     public void verifyStoragePermissions() {
@@ -41,5 +41,23 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void insertData(View view) {
+        BaseDao<User> baseDao = BaseDaoFactory.getInstance().getBaseDao(User.class);
+        baseDao.insert(new User(1, "Ysw", "123456"));
+        Toast.makeText(this, "插入成功", Toast.LENGTH_LONG).show();
+    }
+
+    public void queryData(View view) {
+
+    }
+
+    public void updateData(View view) {
+
+    }
+
+    public void deleteData(View view) {
+
     }
 }

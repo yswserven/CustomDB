@@ -1,4 +1,4 @@
-package com.n.yswdbdemo.db;
+package com.custom.db;
 
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -6,8 +6,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.n.yswdbdemo.annotation.DbField;
-import com.n.yswdbdemo.annotation.DbTable;
+import com.custom.annotation.DbField;
+import com.custom.annotation.DbTable;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
@@ -34,7 +34,7 @@ public class BaseDao<T> implements IBaseDao<T> {
     private boolean isInit = false;
 
     /* 定义一个缓存空间的hashMap @author Ysw created 2020/1/15 */
-    private Map<String, Field> cacheMap;
+    private HashMap<String, Field> cacheMap;
 
 
     protected boolean init(SQLiteDatabase sqLiteDatabase, Class<T> entityClass) {
@@ -49,16 +49,15 @@ public class BaseDao<T> implements IBaseDao<T> {
                 tableName = TextUtils.isEmpty(value) ? entityClass.getSimpleName() : value;
             }
             if (!sqLiteDatabase.isOpen()) {
-                Log.d("Ysw","我已经打开了");
+                Log.d("Ysw", "我已经打开了");
                 return false;
-            } else {
-                String createTableSql = getCreateTableSql();
-                sqLiteDatabase.execSQL(createTableSql);
-                cacheMap = new HashMap<>();
-                initCacheMap();
-                isInit = true;
-                Log.d("Ysw","我第一次打开");
             }
+            String createTableSql = getCreateTableSql();
+            sqLiteDatabase.execSQL(createTableSql);
+            cacheMap = new HashMap<>();
+            initCacheMap();
+            isInit = true;
+            Log.d("Ysw", "我第一次打开");
         }
         return isInit;
 
@@ -66,14 +65,12 @@ public class BaseDao<T> implements IBaseDao<T> {
 
     private void initCacheMap() {
         //取到所有的列名
-        String sql = "select * from " + tableName + " limit 1,0";
+        String sql = "select * from " + tableName + " limit 1, 0";
         Cursor cursor = sqLiteDatabase.rawQuery(sql, null);
         String[] columnNames = cursor.getColumnNames();
-        //关闭游标卡尺
-        cursor.close();
 
         //取所有的成员变量
-        Field[] fields = entityClass.getFields();
+        Field[] fields = entityClass.getDeclaredFields();
         for (Field field : fields) {
             //进行成员变量操作权限获取
             field.setAccessible(true);
@@ -103,6 +100,7 @@ public class BaseDao<T> implements IBaseDao<T> {
 
     private String getCreateTableSql() {
         //create table if not exists tb_user(_id integer,name varchar2(20),password varchar2(20))
+        // create table if not exists tb_user(_id INTEGER,name TEXT,password TEXT)
         StringBuffer stringBuffer = new StringBuffer();
         stringBuffer.append("create table if not exists ");
         stringBuffer.append(tableName + "(");
@@ -113,30 +111,30 @@ public class BaseDao<T> implements IBaseDao<T> {
             if (field.getAnnotation(DbField.class) != null &&
                     !TextUtils.isEmpty(field.getAnnotation(DbField.class).value())) {
                 if (type == String.class) {
-                    stringBuffer.append(field.getAnnotation(DbField.class).value() + "TEXT,");
+                    stringBuffer.append(field.getAnnotation(DbField.class).value() + " TEXT,");
                 } else if (type == Integer.class) {
-                    stringBuffer.append(field.getAnnotation(DbField.class).value() + "INTEGER,");
+                    stringBuffer.append(field.getAnnotation(DbField.class).value() + " INTEGER,");
                 } else if (type == Long.class) {
-                    stringBuffer.append(field.getAnnotation(DbField.class).value() + "BIGINT,");
+                    stringBuffer.append(field.getAnnotation(DbField.class).value() + " BIGINT,");
                 } else if (type == Double.class) {
-                    stringBuffer.append(field.getAnnotation(DbField.class).value() + "DOUBLE,");
+                    stringBuffer.append(field.getAnnotation(DbField.class).value() + " DOUBLE,");
                 } else if (type == byte[].class) {
-                    stringBuffer.append(field.getAnnotation(DbField.class).value() + "BLOG,");
+                    stringBuffer.append(field.getAnnotation(DbField.class).value() + " BLOG,");
                 } else {
                     /* 不支持的类型 @author Ysw created 2020/1/15 */
                     continue;
                 }
             } else {
                 if (type == String.class) {
-                    stringBuffer.append(field.getName() + "TEXT,");
+                    stringBuffer.append(field.getName() + " TEXT,");
                 } else if (type == Integer.class) {
-                    stringBuffer.append(field.getName() + "INTEGER,");
+                    stringBuffer.append(field.getName() + " INTEGER,");
                 } else if (type == Long.class) {
-                    stringBuffer.append(field.getName() + "BIGINT,");
+                    stringBuffer.append(field.getName() + " BIGINT,");
                 } else if (type == Double.class) {
-                    stringBuffer.append(field.getName() + "DOUBLE,");
+                    stringBuffer.append(field.getName() + " DOUBLE,");
                 } else if (type == byte[].class) {
-                    stringBuffer.append(field.getName() + "BLOG,");
+                    stringBuffer.append(field.getName() + " BLOG,");
                 } else {
                     /* 不支持的类型 @author Ysw created 2020/1/15 */
                     continue;
@@ -150,12 +148,6 @@ public class BaseDao<T> implements IBaseDao<T> {
         return stringBuffer.toString();
     }
 
-    @Override
-    public long insert(T entity) {
-        Map<String, String> map = getValues(entity);
-        ContentValues contentValues = getContentValues(map);
-        return sqLiteDatabase.insert(tableName, null, contentValues);
-    }
 
     private ContentValues getContentValues(Map<String, String> map) {
         ContentValues contentValues = new ContentValues();
@@ -198,6 +190,13 @@ public class BaseDao<T> implements IBaseDao<T> {
             }
         }
         return map;
+    }
+
+    @Override
+    public long insert(T entity) {
+        Map<String, String> map = getValues(entity);
+        ContentValues contentValues = getContentValues(map);
+        return sqLiteDatabase.insert(tableName, null, contentValues);
     }
 
     @Override

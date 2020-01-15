@@ -1,4 +1,4 @@
-package com.n.yswdbdemo.db;
+package com.custom.db;
 
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Environment;
@@ -21,10 +21,11 @@ public class BaseDaoFactory {
     private BaseDaoFactory() {
         boolean exist = Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED);
         if (exist) {
-            sqLiteDatabasePath = Environment.getDownloadCacheDirectory().toString();
-            sqLiteDatabasePath = "data/data/com.n.yswdbdemo/Ysw.db";
+            /* SDK的目录有问题 @author Ysw created 2020/1/15 */
+            //sqLiteDatabasePath = Environment.getDownloadCacheDirectory().toString();
+            sqLiteDatabasePath = "data/data/com.custom/Ysw.db";
         } else {
-            sqLiteDatabasePath = "data/data/com.n.yswdbdemo/Ysw.db";
+            sqLiteDatabasePath = "data/data/com.custom/Ysw.db";
         }
         /* 创建database @author Ysw created 2020/1/15 */
         sqLiteDatabase = SQLiteDatabase.openOrCreateDatabase(sqLiteDatabasePath, null);

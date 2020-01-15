@@ -1,4 +1,4 @@
-package com.n.yswdbdemo.db;
+package com.custom.db;
 
 import java.util.List;
 

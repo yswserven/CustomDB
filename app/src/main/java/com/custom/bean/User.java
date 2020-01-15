@@ -1,7 +1,7 @@
-package com.n.yswdbdemo.bean;
+package com.custom.bean;
 
-import com.n.yswdbdemo.annotation.DbField;
-import com.n.yswdbdemo.annotation.DbTable;
+import com.custom.annotation.DbField;
+import com.custom.annotation.DbTable;
 
 /**
  * Created by: Ysw on 2020/1/15.

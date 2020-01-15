@@ -1,4 +1,4 @@
-package com.n.yswdbdemo;
+package com.custom;
 
 import org.junit.Test;
 
