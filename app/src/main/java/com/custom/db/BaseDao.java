@@ -4,12 +4,12 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.custom.annotation.DbField;
 import com.custom.annotation.DbTable;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -49,7 +49,6 @@ public class BaseDao<T> implements IBaseDao<T> {
                 tableName = TextUtils.isEmpty(value) ? entityClass.getSimpleName() : value;
             }
             if (!sqLiteDatabase.isOpen()) {
-                Log.d("Ysw", "我已经打开了");
                 return false;
             }
             String createTableSql = getCreateTableSql();
@@ -57,7 +56,6 @@ public class BaseDao<T> implements IBaseDao<T> {
             cacheMap = new HashMap<>();
             initCacheMap();
             isInit = true;
-            Log.d("Ysw", "我第一次打开");
         }
         return isInit;
 
@@ -192,6 +190,30 @@ public class BaseDao<T> implements IBaseDao<T> {
         return map;
     }
 
+    private class Condition {
+        private String whereCause;
+        private String[] whereArgs;
+
+        public Condition(Map<String, String> whereCause) {
+            ArrayList list = new ArrayList();
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.append("1=1");
+
+            Set<String> keys = whereCause.keySet();
+            Iterator<String> iterator = keys.iterator();
+            while (iterator.hasNext()) {
+                String key = iterator.next();
+                String value = whereCause.get(key);
+                if (value != null) {
+                    stringBuilder.append(" and " + key + "=?");
+                    list.add(value);
+                }
+            }
+            this.whereCause = stringBuilder.toString();
+            this.whereArgs = (String[]) list.toArray(new String[list.size()]);
+        }
+    }
+
     @Override
     public long insert(T entity) {
         Map<String, String> map = getValues(entity);
@@ -201,22 +223,81 @@ public class BaseDao<T> implements IBaseDao<T> {
 
     @Override
     public long update(T entity, T where) {
-        return 0;
+//        sqLiteDatabase.update(tableName,ContentValues,"name=?",new String[]{"test"});
+        Map<String, String> values = getValues(entity);
+        ContentValues contentValues = getContentValues(values);
+        Map whereCause = getValues(where);
+        Condition condition = new Condition(whereCause);
+        return sqLiteDatabase.update(tableName, contentValues, condition.whereCause, condition.whereArgs);
     }
 
     @Override
     public int delete(T where) {
-        return 0;
+//        sqLiteDatabase.delete(tableName, "name=?", new String[]{});
+        Map<String, String> map = getValues(where);
+        Condition condition = new Condition(map);
+        return sqLiteDatabase.delete(tableName, condition.whereCause, condition.whereArgs);
     }
 
     @Override
     public List<T> query(T where) {
-        return null;
+        return query(where, null, null, null);
     }
 
     @Override
     public List<T> query(T where, String orderBy, Integer startIndex, Integer limit) {
-        return null;
+//        sqLiteDatabase.query(tableName, null, "id=?", new String[]{}, null, null, "orderby", "1,5");
+        Map<String, String> map = getValues(where);
+        String limitString = null;
+        if (startIndex != null && limit != null) {
+            limitString = startIndex + " , " + limit;
+        }
+        Condition condition = new Condition(map);
+        Cursor cursor = sqLiteDatabase.query(tableName, null, condition.whereCause,
+                condition.whereArgs, null, null, orderBy, limitString);
+        List<T> result = getResult(cursor, where);
+        return result;
+    }
+
+    private List<T> getResult(Cursor cursor, T where) {
+        ArrayList list = new ArrayList();
+        Object item = null;
+        while (cursor.moveToNext()) {
+            try {
+                item = where.getClass().newInstance();
+                Iterator<Map.Entry<String, Field>> iterator = cacheMap.entrySet().iterator();
+                while (iterator.hasNext()) {
+                    Map.Entry<String, Field> entry = iterator.next();
+                    //取列名
+                    String columnName = entry.getKey();
+                    //获取列名在游标中的位置
+                    int columnIndex = cursor.getColumnIndex(columnName);
+
+                    Field field = entry.getValue();
+                    Class<?> type = field.getType();
+                    if (columnIndex != -1) {
+                        if (type == String.class) {
+                            field.set(item, cursor.getString(columnIndex));
+                        } else if (type == Double.class) {
+                            field.set(item, cursor.getDouble(columnIndex));
+                        } else if (type == Integer.class) {
+                            field.set(item, cursor.getInt(columnIndex));
+                        } else if (type == Long.class) {
+                            field.set(item, cursor.getLong(columnIndex));
+                        } else if (type == Byte[].class) {
+                            field.set(item, cursor.getBlob(columnIndex));
+                        } else {
+                            continue;
+                        }
+                    }
+                }
+                list.add(item);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        cursor.close();
+        return list;
     }
 
     @Override

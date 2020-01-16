@@ -31,14 +31,14 @@ public class BaseDaoFactory {
         sqLiteDatabase = SQLiteDatabase.openOrCreateDatabase(sqLiteDatabasePath, null);
     }
 
-    public <T> BaseDao<T> getBaseDao(Class<T> entityClass) {
+    public synchronized <T extends BaseDao<M>, M> T getBaseDao(Class<T> daoClass, Class<M> entityClass) {
         BaseDao baseDao = null;
         try {
-            baseDao = BaseDao.class.newInstance();
+            baseDao = daoClass.newInstance();
             baseDao.init(sqLiteDatabase, entityClass);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return baseDao;
+        return (T) baseDao;
     }
 }
