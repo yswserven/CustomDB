@@ -43,6 +43,20 @@
         android:text="删除数据"
         android:textSize="25dp"/>
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="userLogin"
+        android:text="多用户登录"
+        android:textSize="25dp"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="subInsert"
+        android:text="分库插入"
+        android:textSize="25dp"/>
+
 
 
 </LinearLayout>
