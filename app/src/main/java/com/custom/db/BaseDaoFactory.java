@@ -29,9 +29,9 @@ public class BaseDaoFactory {
         if (exist) {
             /* SDK的目录有问题 @author Ysw created 2020/1/15 */
             //sqLiteDatabasePath = Environment.getDownloadCacheDirectory().toString();
-            sqLiteDatabasePath = "data/data/com.custom/Ysw.db";
+            sqLiteDatabasePath = "data/data/com.custom/user.db";
         } else {
-            sqLiteDatabasePath = "data/data/com.custom/Ysw.db";
+            sqLiteDatabasePath = "data/data/com.custom/user.db";
         }
         /* 创建database @author Ysw created 2020/1/15 */
         sqLiteDatabase = SQLiteDatabase.openOrCreateDatabase(sqLiteDatabasePath, null);
