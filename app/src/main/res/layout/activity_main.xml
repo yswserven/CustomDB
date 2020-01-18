@@ -10,16 +10,9 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:onClick="createTable"
-        android:text="创建数据库"
-        android:textSize="25dp" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:onClick="insertData"
         android:text="插入数据"
-        android:textSize="25dp"/>
+        android:textSize="25dp" />
 
 
     <Button
@@ -27,36 +20,35 @@
         android:layout_height="wrap_content"
         android:onClick="queryData"
         android:text="查询数据"
-        android:textSize="25dp"/>
+        android:textSize="25dp" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:onClick="updateData"
         android:text="更新数据"
-        android:textSize="25dp"/>
+        android:textSize="25dp" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:onClick="deleteData"
         android:text="删除数据"
-        android:textSize="25dp"/>
+        android:textSize="25dp" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:onClick="userLogin"
         android:text="多用户登录"
-        android:textSize="25dp"/>
+        android:textSize="25dp" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:onClick="subInsert"
         android:text="分库插入"
-        android:textSize="25dp"/>
-
+        android:textSize="25dp" />
 
 
 </LinearLayout>

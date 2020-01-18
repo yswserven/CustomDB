@@ -1,31 +1,31 @@
-package com.custom.subsqlite;
+package com.custom.db;
 
 import com.custom.bean.User;
-import com.custom.db.BaseDaoFactory;
 
 import java.io.File;
 
 /**
- * Created by: Ysw on 2020/1/16.
+ * Created by: Ysw on 2020/1/18.
  */
-public enum PrivateDataBaseEnums {
+public enum DataBasePathEnums {
     database("");
-    private String value;
+    private String databasePath;
 
-    PrivateDataBaseEnums(String value) {
-
+    DataBasePathEnums(String databasePath) {
     }
 
-    public String getValue() {
+    public String getDatabasePath() {
         UserDao userDao = BaseDaoFactory.getInstance().getBaseDao(UserDao.class, User.class);
         if (userDao != null) {
             User currentUser = userDao.getCurrentUser();
+            File file = new File("/data/data/com.custom");
             if (currentUser != null) {
-                File file = new File("/data/data/com.custom");
                 if (!file.exists()) {
                     file.mkdirs();
                 }
                 return file.getAbsolutePath() + "/" + currentUser.getId() + "_login.db";
+            } else {
+                return file.getAbsolutePath() + "/" + "tourist" + "_login.db";
             }
         }
         return null;

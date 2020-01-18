@@ -1,21 +1,17 @@
-package com.custom.subsqlite;
+package com.custom.db;
 
 import com.custom.bean.User;
-import com.custom.db.BaseDao;
 
 import java.util.List;
 
 /**
- * Created by: Ysw on 2020/1/16.
- * <p>
- * 维护公用的那个表
+ * Created by: Ysw on 2020/1/18.
  */
 public class UserDao extends BaseDao<User> {
-
     @Override
     public long insert(User entity) {
         List<User> list = query(new User());
-        User where = null;
+        User where;
         for (User user : list) {
             where = new User();
             where.setId(user.getId());
@@ -26,6 +22,12 @@ public class UserDao extends BaseDao<User> {
         return super.insert(entity);
     }
 
+
+    /**
+     * 获取当前的用户
+     *
+     * @author Ysw created at 2020/1/18 1:56
+     */
     public User getCurrentUser() {
         User user = new User();
         user.setStatus(1);
